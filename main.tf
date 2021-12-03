@@ -1,6 +1,6 @@
 locals {
   gcp_permissions = jsondecode(file("${path.module}/gcp_permissions.json"))
-  orca_production_project_number = "788120191304"
+  orca_production_project_number = "929498350059"
 }
 
 resource "google_project_service" "service" {
