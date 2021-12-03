@@ -61,6 +61,13 @@ resource "google_project_service" "target" {
   service = local.gcp_permissions.api_services[count.index]
 }
 
+resource "google_project_iam_custom_role" "orca-custom-role2" {
+  role_id      = "orca_security_in_account_target_account_role"
+  title        = "Orca Security In-Account Side Scanner Role"
+  permissions  = concat(local.gcp_permissions.base)
+  project      = var.target_project_id
+}
+
 resource "google_project_iam_binding" "target-project-binding-1" {
   project = var.target_project_id
   role    = "roles/viewer"
@@ -79,7 +86,7 @@ resource "google_project_iam_binding" "target-project-binding-2" {
 
 resource "google_project_iam_binding" "target-project-binding-3" {
   project = var.target_project_id
-  role    = "roles/storage.objectViewer"
+  role    = "roles/iam.securityReviewer"
   members = [
     "serviceAccount:${google_service_account.orca.email}",
   ]
@@ -87,15 +94,15 @@ resource "google_project_iam_binding" "target-project-binding-3" {
 
 resource "google_project_iam_binding" "target-project-binding-4" {
   project = var.target_project_id
-  role    = "roles/iam.securityReviewer"
+  role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   members = [
-    "serviceAccount:${google_service_account.orca.email}",
+    "serviceAccount:service-${local.orca_production_project_number}@compute-system.iam.gserviceaccount.com",
   ]
 }
 
 resource "google_project_iam_binding" "target-project-binding-5" {
   project = var.target_project_id
-  role    = "projects/${var.target_project_id}/roles/${google_project_iam_custom_role.orca-custom-role.role_id}"
+  role    = "projects/${var.target_project_id}/roles/${google_project_iam_custom_role.orca-custom-role2.role_id}"
   members = [
     "serviceAccount:${google_service_account.orca.email}",
   ]
