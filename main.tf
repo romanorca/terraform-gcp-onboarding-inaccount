@@ -4,15 +4,15 @@ locals {
 }
 
 resource "google_project_service" "service" {
-  count = length(local.gcp_permissions.api_services)
+  count   = length(local.gcp_permissions.api_services)
   project = var.service_project_id
   service = local.gcp_permissions.api_services[count.index]
 }
 
 resource "google_project_iam_custom_role" "orca-custom-role" {
-  role_id     = "orca_security_in_account_side_scanner_role"
-  title       = "In Account Orca Security Side Scanner Role"
-  permissions = concat(local.gcp_permissions.base, local.gcp_permissions.inaccount_extras)
+  role_id      = "orca_security_in_account_side_scanner_role"
+  title        = "In Account Orca Security Side Scanner Role"
+  permissions  = concat(local.gcp_permissions.base, local.gcp_permissions.inaccount_extras)
   project      = var.service_project_id
 }
 
@@ -25,7 +25,6 @@ resource "google_service_account" "orca" {
 resource "google_project_iam_binding" "service-project-binding-1" {
   project = var.service_project_id
   role    = "roles/viewer"
-
   members = [
     "serviceAccount:${google_service_account.orca.email}",
   ]
@@ -33,8 +32,7 @@ resource "google_project_iam_binding" "service-project-binding-1" {
 
 resource "google_project_iam_binding" "service-project-binding-2" {
   project = var.service_project_id
-  role = "projects/${var.service_project_id}/roles/${google_project_iam_custom_role.orca-custom-role.role_id}"
-
+  role    = "projects/${var.service_project_id}/roles/${google_project_iam_custom_role.orca-custom-role.role_id}"
   members = [
     "serviceAccount:${google_service_account.orca.email}",
   ]
@@ -43,7 +41,6 @@ resource "google_project_iam_binding" "service-project-binding-2" {
 resource "google_project_iam_binding" "service-project-binding-3" {
   project = var.service_project_id
   role    = "roles/iam.serviceAccountUser"
-
   members = [
     "serviceAccount:${google_service_account.orca.email}",
   ]
@@ -59,7 +56,7 @@ resource "local_file" "orca" {
 }
 
 resource "google_project_service" "target" {
-  count = length(local.gcp_permissions.api_services)
+  count   = length(local.gcp_permissions.api_services)
   project = var.target_project_id
   service = local.gcp_permissions.api_services[count.index]
 }
@@ -98,7 +95,7 @@ resource "google_project_iam_binding" "target-project-binding-4" {
 
 resource "google_project_iam_binding" "target-project-binding-5" {
   project = var.target_project_id
-  role = "projects/${var.target_project_id}/roles/${google_project_iam_custom_role.orca-custom-role.role_id}"
+  role    = "projects/${var.target_project_id}/roles/${google_project_iam_custom_role.orca-custom-role.role_id}"
   members = [
     "serviceAccount:${google_service_account.orca.email}",
   ]
