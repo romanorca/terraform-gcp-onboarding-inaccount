@@ -22,25 +22,21 @@ resource "google_service_account" "orca" {
   display_name = "Orca Security Side Scanning Service Account"
 }
 
-resource "google_project_iam_binding" "service-project-binding-1" {
+resource "google_project_iam_member" "service-project-membership-1" {
   project = var.service_project_id
   role    = "roles/viewer"
-  members = [
-    "serviceAccount:${google_service_account.orca.email}",
-  ]
+  member  = "serviceAccount:${google_service_account.orca.email}"
 }
 
-resource "google_project_iam_binding" "service-project-binding-2" {
-  project = var.service_project_id
-  role    = "projects/${var.service_project_id}/roles/${google_project_iam_custom_role.orca-custom-role.role_id}"
-  members = [
-    "serviceAccount:${google_service_account.orca.email}",
-  ]
-}
-
-resource "google_project_iam_binding" "service-project-binding-3" {
+resource "google_project_iam_member" "service-project-membership-2" {
   project = var.service_project_id
   role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.orca.email}"
+}
+
+resource "google_project_iam_binding" "service-project-binding-1" {
+  project = var.service_project_id
+  role    = "projects/${var.service_project_id}/roles/${google_project_iam_custom_role.orca-custom-role.role_id}"
   members = [
     "serviceAccount:${google_service_account.orca.email}",
   ]
@@ -68,39 +64,31 @@ resource "google_project_iam_custom_role" "orca-custom-role2" {
   project      = var.target_project_id
 }
 
-resource "google_project_iam_binding" "target-project-binding-1" {
+resource "google_project_iam_member" "target-project-membership-1" {
   project = var.target_project_id
   role    = "roles/viewer"
-  members = [
-    "serviceAccount:${google_service_account.orca.email}",
-  ]
+  member  = "serviceAccount:${google_service_account.orca.email}"
 }
 
-resource "google_project_iam_binding" "target-project-binding-2" {
+resource "google_project_iam_member" "target-project-membership-2" {
   project = var.target_project_id
   role    = "roles/storage.objectViewer"
-  members = [
-    "serviceAccount:${google_service_account.orca.email}",
-  ]
+  member  = "serviceAccount:${google_service_account.orca.email}"
 }
 
-resource "google_project_iam_binding" "target-project-binding-3" {
+resource "google_project_iam_member" "target-project-membership-3" {
   project = var.target_project_id
   role    = "roles/iam.securityReviewer"
-  members = [
-    "serviceAccount:${google_service_account.orca.email}",
-  ]
+  member  = "serviceAccount:${google_service_account.orca.email}"
 }
 
-resource "google_project_iam_binding" "target-project-binding-4" {
+resource "google_project_iam_member" "target-project-membership-4" {
   project = var.target_project_id
   role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  members = [
-    "serviceAccount:service-${local.orca_production_project_number}@compute-system.iam.gserviceaccount.com",
-  ]
+  member  = "serviceAccount:service-${local.orca_production_project_number}@compute-system.iam.gserviceaccount.com"
 }
 
-resource "google_project_iam_binding" "target-project-binding-5" {
+resource "google_project_iam_binding" "target-project-binding-1" {
   project = var.target_project_id
   role    = "projects/${var.target_project_id}/roles/${google_project_iam_custom_role.orca-custom-role2.role_id}"
   members = [
